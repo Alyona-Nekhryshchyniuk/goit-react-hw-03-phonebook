@@ -5,6 +5,17 @@ import Filter from './Filter';
 import ContactList from './ContactList';
 
 class App extends Component {
+  async componentDidMount() {
+    const storageData = await JSON.parse(localStorage.getItem('contacts'));
+    storageData && this.setState({ contacts: [...storageData] });
+  }
+
+  componentDidUpdate(_, prevState) {
+    if (prevState.contacts.length < this.state.contacts.length) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
+
   state = {
     contacts: [],
     filter: '',
@@ -14,7 +25,7 @@ class App extends Component {
     this.state.contacts.find(obj => obj.name === name)
       ? alert(`${name} is already in contacts`)
       : this.setState(prevState => ({
-          contacts: [...prevState.contacts, { name, id: nanoid(), number }],
+          contacts: [{ name, id: nanoid(), number }, ...prevState.contacts],
         }));
   };
 
